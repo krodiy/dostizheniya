@@ -158,7 +158,7 @@ textarea:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
 .board-head { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
 .board-head h2 { font-size: clamp(1.5rem, 4vw, 2.1rem); font-weight: 800; letter-spacing: -0.02em; }
 .count { color: var(--ink-muted); font-variant-numeric: tabular-nums; }
-.board-head .link { margin-left: auto; }
+.board-actions { margin-left: auto; display: flex; gap: 18px; flex-wrap: wrap; }
 .tabs { display: none; }
 .cols { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; align-items: start; }
 .col {
@@ -366,7 +366,24 @@ body.screen-mode.no-cursor, body.screen-mode.no-cursor * { cursor: none; }
   white-space: pre-wrap; overflow-wrap: anywhere;
   display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 6; overflow: hidden;
 }
+.s-card { position: relative; }
 .s-card.fresh { background: var(--ink); color: #ffffff; animation: pop .6s ease; }
+.s-del { display: none; }
+body.is-admin .s-card { padding-right: 2.4em; }
+body.is-admin .s-del {
+  display: grid; place-items: center;
+  position: absolute; top: .4em; right: .4em;
+  width: 1.7em; height: 1.7em;
+  border: 0; border-radius: 50%;
+  background: var(--red-pale); color: #a3001a;
+  font: 700 1.05em/1 var(--font);
+  cursor: pointer;
+}
+body.is-admin .s-del:hover, body.is-admin .s-del:focus-visible { background: var(--red); color: #ffffff; }
+.s-admin {
+  background: var(--red-pale); color: #a3001a;
+  font-weight: 700; padding: .35em .8em; border-radius: 999px;
+}
 @keyframes pop { from { transform: scale(.92); } to { transform: none; } }
 .s-new {
   display: inline-block; margin-bottom: .45em;
@@ -385,7 +402,9 @@ body.screen-mode.no-cursor, body.screen-mode.no-cursor * { cursor: none; }
 .s-live { display: flex; align-items: center; gap: .6em; }
 .s-dot { width: .65em; height: .65em; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 .25em var(--green-pale); }
 .s-live.off .s-dot { background: var(--red); box-shadow: 0 0 0 .25em var(--red-pale); }
-.s-foot .link { margin-left: auto; font-size: 1em; }
+.s-actions { margin-left: auto; display: flex; align-items: center; gap: 1.5em; }
+.s-foot .link { font-size: 1em; }
+.link:disabled { opacity: .6; cursor: progress; }
 body.screen-mode .toast { top: 1.4em; bottom: auto; font-size: 1.5em; padding: .7em 1.3em; }
 @media (max-width: 800px) {
   body.screen-mode { overflow: auto; }
@@ -441,7 +460,10 @@ body.screen-mode .toast { top: 1.4em; bottom: auto; font-size: 1.5em; padding: .
     <div class="board-head">
       <h2 id="board-title">Общая таблица</h2>
       <span class="count" id="count"></span>
-      <button class="link" id="refresh" type="button">Обновить</button>
+      <div class="board-actions">
+        <button class="link" id="export" type="button">Скачать картинкой</button>
+        <button class="link" id="refresh" type="button">Обновить</button>
+      </div>
     </div>
     <div class="tabs" role="tablist" aria-label="Кварталы">
       <button class="tab q0" type="button" role="tab" data-q="0">I<small>0</small></button>
@@ -477,7 +499,11 @@ body.screen-mode .toast { top: 1.4em; bottom: auto; font-size: 1.5em; padding: .
   <footer class="s-foot">
     <div class="s-live" id="s-live"><span class="s-dot"></span><span id="s-live-label">Подключаемся…</span></div>
     <span id="s-scroll-hint" hidden>Колонки можно прокручивать. Если их не трогать, они листаются сами</span>
-    <button class="link" id="s-full" type="button">На весь экран</button>
+    <div class="s-actions">
+      <span class="s-admin" id="s-admin" hidden>Режим администратора: можно удалять записи</span>
+      <button class="link" id="s-export" type="button">Скачать картинкой</button>
+      <button class="link" id="s-full" type="button">На весь экран</button>
+    </div>
   </footer>
 </main>
 
@@ -535,15 +561,17 @@ body.screen-mode .toast { top: 1.4em; bottom: auto; font-size: 1.5em; padding: .
   function load(k) { try { var v = localStorage.getItem(KEY + '-' + k); return v ? JSON.parse(v) : null; } catch (e) { return null; } }
   function drop(k) { try { localStorage.removeItem(KEY + '-' + k); } catch (e) {} }
 
-  // getEntries — прочитать все записи; addEntries — добавить. Ответ: {ok, entries} или {ok:false, error}.
+  // getEntries — прочитать все записи; addEntries, deleteEntry, checkAdmin — POST с полем action.
+  // Ответ: {ok, entries} или {ok:false, error}.
   function call(fn, arg) {
     var ctrl = window.AbortController ? new AbortController() : null;
     var timer = ctrl && setTimeout(function () { ctrl.abort(); }, 25000);
-    var opts = fn === 'addEntries'
-      ? { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(arg) }
-      : { method: 'GET' };
+    var isGet = fn === 'getEntries';
+    var opts = isGet
+      ? { method: 'GET' }
+      : { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(Object.assign({ action: fn }, arg || {})) };
     if (ctrl) opts.signal = ctrl.signal;
-    var url = fn === 'addEntries' ? API : API + '?api=entries&t=' + Date.now();
+    var url = isGet ? API + '?api=entries&t=' + Date.now() : API;
     return fetch(url, opts).then(function (r) {
       if (!r.ok) throw new Error('HTTP ' + r.status);
       return r.json();
@@ -745,6 +773,197 @@ body.screen-mode .toast { top: 1.4em; bottom: auto; font-size: 1.5em; padding: .
     loadBoard().then(function () { toast('Таблица обновлена'); }, function () { toast('Не удалось обновить. Проверьте интернет'); });
   });
 
+  // ── Картинка всей таблицы: все записи целиком, без прокрутки и обрезки ──
+  function today() {
+    var d = new Date();
+    return ('0' + d.getDate()).slice(-2) + '.' + ('0' + (d.getMonth() + 1)).slice(-2) + '.' + d.getFullYear();
+  }
+
+  function drawTable(entries, logo) {
+    var g = byQuarter(entries);
+    var COLORS = ['#aab7c4', '#00af66', '#ffb500', '#ee8042'];
+    var FONT = '"Onest", "Segoe UI", system-ui, sans-serif';
+    var W = 1600, PAD = 56, GAP = 20, COLP = 14, CARDP = 14, CARD_GAP = 10, TEXT = 17, LINE = 23;
+    var HEAD = 190, COL_HEAD = 70, FOOT = 70;
+    var colW = (W - PAD * 2 - GAP * 3) / 4, cardW = colW - COLP * 2, textW = cardW - CARDP * 2;
+
+    var m = document.createElement('canvas').getContext('2d');
+    m.font = '400 ' + TEXT + 'px ' + FONT;
+    function wrap(text) {
+      var lines = [];
+      String(text).split('\n').forEach(function (para) {
+        var words = para.split(/\s+/).filter(Boolean), line = '';
+        if (!words.length) { lines.push(''); return; }
+        words.forEach(function (w) {
+          var test = line ? line + ' ' + w : w;
+          if (m.measureText(test).width <= textW) { line = test; return; }
+          if (line) lines.push(line);
+          while (w.length > 1 && m.measureText(w).width > textW) {  // слишком длинное слово режем
+            var k = w.length - 1;
+            while (k > 1 && m.measureText(w.slice(0, k)).width > textW) k--;
+            lines.push(w.slice(0, k));
+            w = w.slice(k);
+          }
+          line = w;
+        });
+        lines.push(line);
+      });
+      return lines;
+    }
+
+    var cols = g.map(function (list) {
+      var cards = list.map(function (e) {
+        var lines = wrap(e.text);
+        return { lines: lines, h: lines.length * LINE + CARDP * 2 };
+      });
+      var body = cards.length
+        ? cards.reduce(function (s, c) { return s + c.h; }, 0) + CARD_GAP * (cards.length - 1)
+        : 48;
+      return { cards: cards, h: COL_HEAD + body + COLP };
+    });
+    var colH = Math.max.apply(null, cols.map(function (c) { return c.h; }));
+    var H = HEAD + colH + FOOT;
+    var scale = Math.min(2, Math.sqrt(16000000 / (W * H)));  // не больше ~16 Мп, чтобы открывалось и на телефоне
+
+    var cv = document.createElement('canvas');
+    cv.width = Math.round(W * scale);
+    cv.height = Math.round(H * scale);
+    var ctx = cv.getContext('2d');
+    ctx.scale(scale, scale);
+    ctx.textBaseline = 'top';
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, W, H);
+    function rr(x, y, w, h, r) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.arcTo(x + w, y, x + w, y + h, r);
+      ctx.arcTo(x + w, y + h, x, y + h, r);
+      ctx.arcTo(x, y + h, x, y, r);
+      ctx.arcTo(x, y, x + w, y, r);
+      ctx.closePath();
+    }
+
+    // Шапка: логотип, заголовок, счётчик и дата
+    var x = PAD, y = 52;
+    if (logo) {
+      var lh = 60, lw = lh * logo.width / logo.height;
+      ctx.drawImage(logo, x, y + 10, lw, lh);
+      x += lw + 32;
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.12)';
+      ctx.fillRect(x, y, 2, 96);
+      x += 32;
+    }
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.62)';
+    ctx.font = '700 14px ' + FONT;
+    if ('letterSpacing' in ctx) ctx.letterSpacing = '2px';
+    ctx.fillText('ИТОГИ ГОДА', x, y);
+    if ('letterSpacing' in ctx) ctx.letterSpacing = '0px';
+    ctx.font = '800 46px ' + FONT;
+    ctx.fillStyle = '#000000';
+    ctx.fillText('Достижения ', x, y + 24);
+    ctx.fillStyle = '#00af66';
+    ctx.fillText(String(YEAR), x + ctx.measureText('Достижения ').width, y + 24);
+    var n = entries.length;
+    ctx.font = '400 19px ' + FONT;
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.62)';
+    ctx.fillText(n + ' ' + plural(n, 'достижение', 'достижения', 'достижений') + ' · на ' + today(), x, y + 82);
+
+    // Колонки кварталов
+    var top = HEAD;
+    cols.forEach(function (col, i) {
+      var cx = PAD + i * (colW + GAP);
+      ctx.fillStyle = COLORS[i];
+      rr(cx, top, colW, colH, 20);
+      ctx.fill();
+
+      ctx.fillStyle = '#000000';
+      ctx.font = '800 30px ' + FONT;
+      ctx.fillText(QN[i], cx + 18, top + 18);
+      var nx = cx + 18 + ctx.measureText(QN[i]).width + 12;
+      ctx.font = '700 15px ' + FONT;
+      ctx.fillText(i === cq ? 'квартал · сейчас' : 'квартал', nx, top + 18);
+      ctx.font = '400 13px ' + FONT;
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.68)';
+      ctx.fillText(QM[i], nx, top + 37);
+
+      var cnt = String(g[i].length);
+      ctx.font = '700 14px ' + FONT;
+      var pw = Math.max(30, ctx.measureText(cnt).width + 20);
+      ctx.fillStyle = '#000000';
+      rr(cx + colW - 18 - pw, top + 18, pw, 28, 14);
+      ctx.fill();
+      ctx.fillStyle = '#ffffff';
+      ctx.textAlign = 'center';
+      ctx.fillText(cnt, cx + colW - 18 - pw / 2, top + 25);
+      ctx.textAlign = 'left';
+
+      var cy = top + COL_HEAD;
+      if (!col.cards.length) {
+        ctx.strokeStyle = 'rgba(0, 0, 0, 0.28)';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([6, 5]);
+        rr(cx + COLP, cy, cardW, 48, 10);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+        ctx.font = '400 15px ' + FONT;
+        ctx.textAlign = 'center';
+        ctx.fillText('Пока пусто', cx + colW / 2, cy + 15);
+        ctx.textAlign = 'left';
+      }
+      col.cards.forEach(function (c) {
+        ctx.fillStyle = '#ffffff';
+        rr(cx + COLP, cy, cardW, c.h, 10);
+        ctx.fill();
+        ctx.fillStyle = '#000000';
+        ctx.font = '400 ' + TEXT + 'px ' + FONT;
+        c.lines.forEach(function (ln, k) { ctx.fillText(ln, cx + COLP + CARDP, cy + CARDP + 2 + k * LINE); });
+        cy += c.h + CARD_GAP;
+      });
+    });
+
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+    ctx.font = '400 15px ' + FONT;
+    ctx.fillText(BOOT.url.replace(/^https?:\/\//, ''), PAD, top + colH + 26);
+    return cv;
+  }
+
+  function exportPng(entries, btn) {
+    if (!entries) { toast('Таблица ещё загружается, попробуйте через пару секунд'); return; }
+    var label = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'Готовим картинку…';
+    function done() { btn.disabled = false; btn.textContent = label; }
+    var fonts = document.fonts && document.fonts.load
+      ? Promise.all(['400 17px Onest', '700 15px Onest', '800 46px Onest'].map(function (f) {
+          return document.fonts.load(f).catch(function () {});
+        }))
+      : Promise.resolve();
+    var logo = new Promise(function (resolve) {
+      var img = new Image();
+      img.onload = function () { resolve(img); };
+      img.onerror = function () { resolve(null); };
+      img.src = 'alif.png';
+    });
+    Promise.all([fonts, logo]).then(function (res) {
+      drawTable(entries, res[1]).toBlob(function (blob) {
+        if (!blob) { toast('Не получилось сделать картинку'); done(); return; }
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = 'dostizheniya-' + YEAR + '.png';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(function () { URL.revokeObjectURL(url); }, 60000);
+        toast('Картинка таблицы скачана');
+        done();
+      }, 'image/png');
+    }).catch(function () { toast('Не получилось сделать картинку'); done(); });
+  }
+
+  $('export').addEventListener('click', function () { exportPng(state.loaded ? state.entries : null, this); });
+
   // ── QR ──
   var pageUrl = BOOT.url || location.href;
   // Уровень L — меньше точек и крупнее каждая, экран не пачкается. Белая рамка — 4 точки, как в стандарте.
@@ -813,7 +1032,7 @@ body.screen-mode .toast { top: 1.4em; bottom: auto; font-size: 1.5em; padding: .
     var IDLE = 30000;    // после ручной прокрутки колонка столько ждёт, прежде чем листать сама
     var POLL = 15000;    // как часто проверять новые записи
     var FRESH = 45000;   // сколько подсвечивать новую запись
-    var sc = { entries: null, keys: {}, fresh: {}, cols: [] };
+    var sc = { entries: null, keys: {}, fresh: {}, cols: [], admin: null };
 
     document.body.classList.add('screen-mode');
     $('s-yr').textContent = YEAR;
@@ -867,6 +1086,14 @@ body.screen-mode .toast { top: 1.4em; bottom: auto; font-size: 1.5em; padding: .
           card.setAttribute('data-k', k);
           if (isFresh) card.appendChild(el('span', 's-new', 'новое'));
           card.appendChild(el('p', null, e.text));
+          if (sc.admin) {
+            var del = el('button', 's-del', '×');
+            del.type = 'button';
+            del.title = 'Удалить запись';
+            del.setAttribute('aria-label', 'Удалить запись');
+            del.addEventListener('click', function () { askDelete(e, del); });
+            card.appendChild(del);
+          }
           c.list.appendChild(card);
         });
         c.list.scrollTop = toTop && toTop[i] ? 0 : keep;
@@ -965,6 +1192,50 @@ body.screen-mode .toast { top: 1.4em; bottom: auto; font-size: 1.5em; padding: .
     }
     document.addEventListener('mousemove', showCursor);
     showCursor();
+
+    // ── Админ: ссылка ?page=screen&admin=КЛЮЧ. Ключ проверяет сервер, из адресной строки он сразу убирается ──
+    function setEntries(entries) {
+      sc.entries = entries || [];
+      sc.keys = {};
+      sc.entries.forEach(function (x) { sc.keys[entryKey(x)] = true; });
+    }
+    function askDelete(e, btn) {
+      if (!sc.admin) return;
+      var preview = e.text.length > 160 ? e.text.slice(0, 160) + '…' : e.text;
+      if (!window.confirm('Удалить запись из ' + QN[e.q] + ' квартала?\n\n«' + preview + '»')) return;
+      btn.disabled = true;
+      call('deleteEntry', { key: sc.admin, i: e.i, at: e.at, q: e.q, text: e.text }).then(function (entries) {
+        delete sc.fresh[entryKey(e)];
+        setEntries(entries);
+        render();
+        toast('Запись удалена');
+      }, function (err) {
+        btn.disabled = false;
+        toast(errText(err, 'Не получилось удалить. Проверьте интернет и попробуйте ещё раз.'));
+        poll();
+      });
+    }
+
+    var adminKey = new URLSearchParams(location.search).get('admin');
+    if (adminKey) {
+      try { sessionStorage.setItem(KEY + '-admin', adminKey); } catch (e) {}
+      try { history.replaceState(null, '', location.pathname + '?page=screen' + location.hash); } catch (e) {}
+    } else {
+      try { adminKey = sessionStorage.getItem(KEY + '-admin'); } catch (e) {}
+    }
+    if (adminKey) {
+      call('checkAdmin', { key: adminKey }).then(function () {
+        sc.admin = adminKey;
+        document.body.classList.add('is-admin');
+        $('s-admin').hidden = false;
+        render();
+      }, function (err) {
+        try { sessionStorage.removeItem(KEY + '-admin'); } catch (e) {}
+        toast(errText(err, 'Не удалось проверить ссылку администратора'));
+      });
+    }
+
+    $('s-export').addEventListener('click', function () { exportPng(sc.entries, this); });
 
     render();
     poll();
