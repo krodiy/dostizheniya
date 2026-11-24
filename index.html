@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Достижения 2026</title>
+<meta name="description" content="Достижения команды Alif за 2026 год по кварталам">
+<meta name="theme-color" content="#ffffff">
+<link rel="icon" type="image/png" href="icon.png">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&display=swap">
+<style>
+/* Layout: white Alif page; four quarter panels in the Alif palette, one colour per season;
+   white cards hold the words. One light look for every viewer, matching the brand. */
+:root {
+  --bg: #ffffff;          /* Former */
+  --field: #f1f1f2;       /* Search bar bg — #AAAAB1 16% */
+  --ink: #000000;         /* Black */
+  --ink-muted: rgba(0, 0, 0, 0.62);
+  --ink-soft: rgba(0, 0, 0, 0.68);
+  --line: rgba(0, 0, 0, 0.12);
+  --green: #00af66;       /* Primary 500 */
+  --green-dark: #009148;  /* Primary Dark */
+  --green-pale: #ecfaf0;  /* Primary 400 — #86E19F 16% */
+  --frost: #aab7c4;       /* Icon color */
+  --yellow: #ffb500;      /* Warning */
+  --orange: #ee8042;      /* Notification */
+  --red: #df2638;         /* Error */
+  --red-pale: #fadcdf;    /* Error pale — #DF2638 16% */
+  --card: #ffffff;
+  --scrim: rgba(0, 0, 0, 0.55);
+  --q0: var(--frost);     /* I   — зима   */
+  --q1: var(--green);     /* II  — весна  */
+  --q2: var(--yellow);    /* III — лето   */
+  --q3: var(--orange);    /* IV  — осень  */
+  --font: "Onest", "Segoe UI", system-ui, -apple-system, sans-serif;
+  color-scheme: light;
+}
+.q0 { --qc: var(--q0); }
+.q1 { --qc: var(--q1); }
+.q2 { --qc: var(--q2); }
+.q3 { --qc: var(--q3); }
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 400 16px/1.55 var(--font);
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.wrap {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding-block: 32px 56px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid;
+  gap: 40px;
+}
+h1, h2 { font-family: var(--font); text-wrap: balance; margin: 0; }
+p { margin: 0; }
+
+/* Header */
+.top { display: grid; gap: 14px; max-width: 760px; justify-items: start; }
+.logo { width: 118px; height: auto; display: block; margin-bottom: 14px; }
+.eyebrow {
+  font: 700 13px/1 var(--font);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+h1 { font-size: clamp(2.3rem, 8vw, 4.6rem); font-weight: 800; line-height: 1.02; letter-spacing: -0.025em; }
+h1 .yr { color: var(--green); font-variant-numeric: tabular-nums; }
+.lead { color: var(--ink-muted); font-size: 18px; max-width: 54ch; }
+
+/* Buttons and links */
+.btn {
+  appearance: none;
+  border: 0;
+  background: var(--green-dark);
+  color: #ffffff;
+  font: 700 19px/1 var(--font);
+  padding: 17px 28px;
+  border-radius: 14px;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.22);
+  transition: transform .1s ease, box-shadow .1s ease, filter .15s ease;
+}
+.btn:hover { filter: brightness(1.08); }
+.btn:active { transform: translateY(3px); box-shadow: 0 1px 0 rgba(0, 0, 0, 0.22); }
+.btn:disabled { opacity: .7; cursor: progress; transform: none; }
+.btn-ghost { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 2px var(--line); }
+.btn-ghost:hover { filter: none; box-shadow: inset 0 0 0 2px var(--ink); }
+.btn-ghost:active { transform: none; }
+.link {
+  appearance: none; border: 0; background: none; padding: 4px 0;
+  color: var(--ink); font: 500 15px/1.2 var(--font);
+  text-decoration: underline; text-decoration-color: var(--green);
+  text-decoration-thickness: 2px; text-underline-offset: 4px; cursor: pointer;
+}
+:focus-visible { outline: 3px solid var(--green-dark); outline-offset: 3px; }
+
+/* Form: four quarter panels */
+#ach-form { display: grid; gap: 20px; }
+.quarters { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.q {
+  background: var(--qc);
+  border-radius: 22px;
+  padding: 18px;
+  display: grid;
+  gap: 14px;
+  align-content: start;
+}
+.q-head { display: flex; align-items: center; gap: 14px; }
+.q-num { font: 800 40px/1 var(--font); min-width: 2ch; letter-spacing: -0.02em; }
+.q-label { display: grid; line-height: 1.2; }
+.q-label b { font-weight: 700; font-size: 17px; }
+.q-label small { font-size: 14px; color: var(--ink-soft); }
+.q-now {
+  margin-left: auto;
+  background: var(--ink);
+  color: #ffffff;
+  font: 600 12px/1 var(--font);
+  padding: 7px 10px;
+  border-radius: 999px;
+}
+textarea {
+  width: 100%;
+  font: inherit;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--ink);
+  background: var(--card);
+  border: 0;
+  border-radius: 14px;
+  padding: 14px;
+  min-height: 112px;
+  resize: vertical;
+}
+textarea::placeholder { color: rgba(0, 0, 0, 0.45); }
+textarea:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+.actions { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.status { color: var(--ink-muted); font-size: 15px; }
+.status.err {
+  background: var(--red-pale); color: #a3001a;
+  padding: 7px 12px; border-radius: 10px; font-weight: 600;
+}
+
+/* Shared table: one coloured column per quarter, each scrolls on its own */
+.board { display: grid; gap: 18px; }
+.board-head { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+.board-head h2 { font-size: clamp(1.5rem, 4vw, 2.1rem); font-weight: 800; letter-spacing: -0.02em; }
+.count { color: var(--ink-muted); font-variant-numeric: tabular-nums; }
+.board-head .link { margin-left: auto; }
+.tabs { display: none; }
+.cols { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; align-items: start; }
+.col {
+  background: var(--qc);
+  border-radius: 20px;
+  padding: 14px 10px 14px 14px;
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+.col-head { display: flex; align-items: center; gap: 10px; padding: 2px 4px 0 2px; }
+.col-num { font: 800 26px/1 var(--font); }
+.col-label { display: grid; line-height: 1.15; font-size: 14px; font-weight: 700; }
+.col-label small { font-weight: 400; font-size: 12px; color: var(--ink-soft); }
+.col-count {
+  margin-left: auto;
+  background: var(--ink); color: #ffffff;
+  font: 700 13px/1 var(--font);
+  padding: 6px 9px; border-radius: 999px;
+  font-variant-numeric: tabular-nums;
+}
+.col-list {
+  display: grid; gap: 7px; align-content: start;
+  max-height: min(66vh, 680px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-right: 4px;
+}
+.scroll { scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, .35) transparent; }
+.scroll::-webkit-scrollbar { width: 7px; }
+.scroll::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, .3); border-radius: 99px; }
+.scroll.more {
+  -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 44px), transparent);
+  mask-image: linear-gradient(to bottom, #000 calc(100% - 44px), transparent);
+}
+.card {
+  background: var(--card);
+  border-radius: 11px;
+  padding: 10px 13px;
+  font-size: 15px;
+  line-height: 1.42;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  transition: background-color .6s ease, color .6s ease;
+}
+.card.fresh { background: var(--ink); color: #ffffff; }
+.col-empty {
+  border: 2px dashed rgba(0, 0, 0, .25);
+  border-radius: 11px;
+  padding: 16px 12px;
+  text-align: center;
+  font-size: 14px;
+  color: var(--ink-soft);
+}
+.board-msg {
+  background: var(--field);
+  border-radius: 18px;
+  padding: 28px 20px;
+  text-align: center;
+  color: var(--ink-muted);
+}
+
+.foot { display: flex; justify-content: center; align-items: center; gap: 12px 24px; flex-wrap: wrap; padding-top: 8px; }
+
+/* QR dialog */
+.qr-layer {
+  position: fixed; inset: 0; z-index: 20;
+  background: var(--scrim);
+  display: grid; place-items: center;
+  padding: max(16px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) max(16px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+}
+.qr-sheet {
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 26px 28px 28px;
+  width: min(440px, 100%);
+  display: grid; gap: 12px; justify-items: center; text-align: center;
+  border-top: 10px solid var(--green);
+}
+.qr-logo { width: 96px; height: auto; display: block; }
+.qr-sheet h2 { font-size: 1.45rem; font-weight: 800; }
+.qr-sheet p { color: var(--ink-muted); }
+.qr-box {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 10px;
+  width: min(300px, 72vw);
+  aspect-ratio: 1;
+  max-width: 100%;
+  display: grid; place-items: center;
+}
+.qr-box svg { width: 100%; height: 100%; display: block; }
+.qr-fallback { color: #333333; font-size: 14px; }
+.qr-url { font-size: 13px; color: var(--ink-muted); word-break: break-all; user-select: all; -webkit-user-select: all; }
+.qr-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+body.qr-mode .qr-sheet { width: min(640px, 100%); }
+body.qr-mode .qr-logo { width: 140px; }
+body.qr-mode .qr-box { width: min(440px, 76vw); }
+body.qr-mode .qr-sheet h2 { font-size: clamp(1.5rem, 5vw, 2.3rem); }
+
+/* Toast */
+.toast {
+  position: fixed; left: 16px; right: 16px;
+  margin-inline: auto; width: fit-content; max-width: 640px;
+  text-align: center;
+  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  z-index: 30;
+  background: var(--ink); color: #ffffff;
+  padding: 13px 20px; border-radius: 14px;
+  font-weight: 600; font-size: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .25);
+}
+
+/* Phones: one quarter panel per row, the table switches by tabs and scrolls with the page */
+@media (max-width: 720px) {
+  .wrap { padding-block: 24px 40px; gap: 30px; }
+  .logo { width: 96px; margin-bottom: 8px; }
+  .quarters { grid-template-columns: minmax(0, 1fr); }
+  .actions .btn { width: 100%; }
+  .tabs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+  .tab {
+    appearance: none; border: 0; cursor: pointer;
+    border-radius: 14px; padding: 10px 4px;
+    background: var(--field); color: var(--ink);
+    font: 800 18px/1 var(--font);
+    display: grid; gap: 5px; justify-items: center;
+  }
+  .tab small { font: 600 12px/1 var(--font); opacity: .75; }
+  .tab[aria-selected="true"] { background: var(--qc); }
+  .cols { grid-template-columns: minmax(0, 1fr); }
+  .col:not(.active) { display: none; }
+  .col { padding-right: 14px; }
+  .col-list { max-height: none; overflow: visible; padding-right: 0; }
+  .scroll.more { -webkit-mask-image: none; mask-image: none; }
+}
+
+/* Big screen (?page=screen): fills the display, everything scales with its width */
+.screen { display: none; }
+body.screen-mode { overflow: hidden; }
+body.screen-mode .wrap { display: none; }
+body.screen-mode .screen {
+  height: 100vh;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 1.2em;
+  padding: 1.5em 2.2em 1em;
+  font-size: clamp(14px, 1.05vw, 30px);
+}
+body.screen-mode.no-cursor, body.screen-mode.no-cursor * { cursor: none; }
+.s-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 2.6em; }
+.s-brand { display: flex; align-items: center; gap: 1.8em; min-width: 0; }
+.s-brand img { width: 7.2em; height: auto; display: block; flex: none; }
+.s-title { display: grid; gap: .45em; padding-left: 1.8em; border-left: 2px solid var(--line); min-width: 0; }
+.s-title .eyebrow { font-size: .8em; }
+.s-title h1 { font-size: min(3em, 4.2vw); }
+.s-stat { display: flex; align-items: baseline; gap: .45em; margin-top: .2em; }
+.s-stat b { font: 800 2.4em/1 var(--font); color: var(--green); font-variant-numeric: tabular-nums; letter-spacing: -0.03em; }
+.s-stat span { color: var(--ink-muted); font-size: 1.1em; }
+.s-qr {
+  display: flex; align-items: center; gap: 1em;
+  background: #ffffff;
+  border: 2px solid var(--line);
+  border-radius: 1.1em;
+  padding: .5em 1.4em .5em .5em;
+}
+.s-qr .qr-box { width: 13em; padding: 0; border-radius: .45em; }
+.s-qr p { font-weight: 700; font-size: 1.2em; max-width: 8em; line-height: 1.3; }
+.s-cols { min-height: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1em; }
+.s-col {
+  min-height: 0;
+  background: var(--qc);
+  border-radius: 1.3em;
+  padding: .95em .6em .95em .95em;
+  display: grid; grid-template-rows: auto minmax(0, 1fr); gap: .8em;
+}
+.s-col-head { display: flex; align-items: center; gap: .7em; padding: .1em .35em 0 .1em; }
+.s-col-num { font: 800 2.2em/1 var(--font); letter-spacing: -0.02em; }
+.s-col-label { display: grid; line-height: 1.2; font-weight: 700; }
+.s-col-label small { font-weight: 400; font-size: .8em; color: var(--ink-soft); }
+.s-col-count {
+  margin-left: auto;
+  background: var(--ink); color: #ffffff;
+  font: 700 1em/1 var(--font);
+  padding: .45em .75em; border-radius: 999px;
+  font-variant-numeric: tabular-nums;
+}
+.s-list {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  display: flex; flex-direction: column; gap: .5em;
+  padding-right: .35em;
+  border-radius: .7em;
+}
+.s-list:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+.s-card {
+  flex: none;
+  background: var(--card);
+  border-radius: .7em;
+  padding: .6em .85em;
+  line-height: 1.38;
+  transition: background-color .8s ease, color .8s ease;
+}
+.s-card p {
+  white-space: pre-wrap; overflow-wrap: anywhere;
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 6; overflow: hidden;
+}
+.s-card.fresh { background: var(--ink); color: #ffffff; animation: pop .6s ease; }
+@keyframes pop { from { transform: scale(.92); } to { transform: none; } }
+.s-new {
+  display: inline-block; margin-bottom: .45em;
+  font: 700 .7em/1 var(--font); letter-spacing: .07em; text-transform: uppercase;
+  background: var(--green); color: var(--ink);
+  border-radius: 999px; padding: .4em .65em;
+}
+.s-empty {
+  border: 2px dashed rgba(0, 0, 0, .28);
+  border-radius: .7em;
+  padding: 1.2em;
+  text-align: center;
+  color: var(--ink-soft);
+}
+.s-foot { display: flex; align-items: center; gap: 1.6em; color: var(--ink-muted); font-size: .9em; }
+.s-live { display: flex; align-items: center; gap: .6em; }
+.s-dot { width: .65em; height: .65em; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 .25em var(--green-pale); }
+.s-live.off .s-dot { background: var(--red); box-shadow: 0 0 0 .25em var(--red-pale); }
+.s-foot .link { margin-left: auto; font-size: 1em; }
+body.screen-mode .toast { top: 1.4em; bottom: auto; font-size: 1.5em; padding: .7em 1.3em; }
+@media (max-width: 800px) {
+  body.screen-mode { overflow: auto; }
+  body.screen-mode .screen { height: auto; font-size: 14px; padding: 16px; }
+  .s-head { grid-template-columns: minmax(0, 1fr); gap: 1em; }
+  .s-brand { flex-wrap: wrap; gap: 1em; }
+  .s-title { padding-left: 0; border-left: 0; }
+  .s-title h1 { font-size: 2.4em; }
+  .s-cols { grid-template-columns: minmax(0, 1fr); }
+  .s-list { max-height: 70vh; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <img class="logo" src="alif.png" alt="alif" width="640" height="313">
+    <p class="eyebrow">Итоги года</p>
+    <h1>Достижения <span class="yr" id="yr"></span></h1>
+    <p class="lead">Чем вы гордитесь в этом году? Напишите в нужный квартал, имя указывать не нужно. Запись сразу появится в общей таблице.</p>
+  </header>
+
+  <form id="ach-form" novalidate>
+    <div class="quarters">
+      <div class="q q0" data-q="0">
+        <div class="q-head"><span class="q-num">I</span><span class="q-label"><b>квартал</b><small>январь — март</small></span><span class="q-now" hidden>идёт сейчас</span></div>
+        <textarea id="q0" maxlength="1500" aria-label="I квартал, январь — март" placeholder="Например: запустили новый онбординг, конверсия выросла на 12%"></textarea>
+      </div>
+      <div class="q q1" data-q="1">
+        <div class="q-head"><span class="q-num">II</span><span class="q-label"><b>квартал</b><small>апрель — июнь</small></span><span class="q-now" hidden>идёт сейчас</span></div>
+        <textarea id="q1" maxlength="1500" aria-label="II квартал, апрель — июнь" placeholder="Что запустили, улучшили, чему научились"></textarea>
+      </div>
+      <div class="q q2" data-q="2">
+        <div class="q-head"><span class="q-num">III</span><span class="q-label"><b>квартал</b><small>июль — сентябрь</small></span><span class="q-now" hidden>идёт сейчас</span></div>
+        <textarea id="q2" maxlength="1500" aria-label="III квартал, июль — сентябрь" placeholder="Что запустили, улучшили, чему научились"></textarea>
+      </div>
+      <div class="q q3" data-q="3">
+        <div class="q-head"><span class="q-num">IV</span><span class="q-label"><b>квартал</b><small>октябрь — декабрь</small></span><span class="q-now" hidden>идёт сейчас</span></div>
+        <textarea id="q3" maxlength="1500" aria-label="IV квартал, октябрь — декабрь" placeholder="Что запустили, улучшили, чему научились"></textarea>
+      </div>
+    </div>
+    <div class="actions">
+      <button type="submit" class="btn" id="save">Добавить в таблицу</button>
+      <span class="status" id="status" role="status"></span>
+    </div>
+  </form>
+
+  <section class="board" id="board" aria-labelledby="board-title">
+    <div class="board-head">
+      <h2 id="board-title">Общая таблица</h2>
+      <span class="count" id="count"></span>
+      <button class="link" id="refresh" type="button">Обновить</button>
+    </div>
+    <div class="tabs" role="tablist" aria-label="Кварталы">
+      <button class="tab q0" type="button" role="tab" data-q="0">I<small>0</small></button>
+      <button class="tab q1" type="button" role="tab" data-q="1">II<small>0</small></button>
+      <button class="tab q2" type="button" role="tab" data-q="2">III<small>0</small></button>
+      <button class="tab q3" type="button" role="tab" data-q="3">IV<small>0</small></button>
+    </div>
+    <div id="board-body"></div>
+  </section>
+
+  <footer class="foot">
+    <button class="btn btn-ghost" id="show-qr" type="button">QR-код для коллег</button>
+    <a class="link" id="screen-link" href="?page=screen">Открыть на большом экране</a>
+  </footer>
+</div>
+
+<main class="screen" id="screen">
+  <header class="s-head">
+    <div class="s-brand">
+      <img src="alif.png" alt="alif" width="640" height="313">
+      <div class="s-title">
+        <p class="eyebrow">Итоги года</p>
+        <h1>Достижения <span class="yr" id="s-yr"></span></h1>
+        <p class="s-stat"><b id="s-count">0</b><span id="s-count-label">достижений в таблице</span></p>
+      </div>
+    </div>
+    <div class="s-qr">
+      <div class="qr-box" id="s-qr"></div>
+      <p>Наведите камеру и добавьте своё достижение</p>
+    </div>
+  </header>
+  <div class="s-cols" id="s-cols"></div>
+  <footer class="s-foot">
+    <div class="s-live" id="s-live"><span class="s-dot"></span><span id="s-live-label">Подключаемся…</span></div>
+    <span id="s-scroll-hint" hidden>Колонки можно прокручивать. Если их не трогать, они листаются сами</span>
+    <button class="link" id="s-full" type="button">На весь экран</button>
+  </footer>
+</main>
+
+<div class="qr-layer" id="qr-layer" hidden>
+  <div class="qr-sheet" role="dialog" aria-modal="true" aria-labelledby="qr-title">
+    <img class="qr-logo" src="alif.png" alt="alif" width="640" height="313">
+    <h2 id="qr-title">Наведите камеру телефона</h2>
+    <p id="qr-sub"></p>
+    <div class="qr-box" id="qr-box"></div>
+    <p class="qr-url" id="qr-url"></p>
+    <div class="qr-actions">
+      <button class="btn btn-ghost" id="copy-url" type="button">Скопировать ссылку</button>
+      <button class="btn" id="close-qr" type="button">Закрыть</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script>
+(function () {
+  // Адрес хранилища (Google Apps Script). Запросы идут без аккаунта Google,
+  // поэтому сайт работает и на телефонах, где выполнен вход в Google.
+  var API = 'https://script.google.com/macros/s/AKfycbziu0I2i6sdIkVAWKhUSMDPcaz2_WeZZ9HcDpLyhLhcSHtQ-j4qmgdiy7AWBLL7spse/exec';
+  var pageParam = new URLSearchParams(location.search).get('page');
+  var BOOT = {
+    year: 2026,
+    url: location.origin + location.pathname,
+    page: pageParam === 'qr' || pageParam === 'screen' ? pageParam : ''
+  };
+  var YEAR = BOOT.year;
+  var QN = ['I', 'II', 'III', 'IV'];
+  var QM = ['январь — март', 'апрель — июнь', 'июль — сентябрь', 'октябрь — декабрь'];
+  var KEY = 'achievements-' + YEAR;
+  var HINT = 'Можно заполнить один квартал или все сразу.';
+  var SMOOTH = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+
+  var $ = function (id) { return document.getElementById(id); };
+  var achForm = $('ach-form'), saveBtn = $('save'), statusEl = $('status');
+  var boardBody = $('board-body'), countEl = $('count');
+  var ta = [0, 1, 2, 3].map(function (i) { return $('q' + i); });
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.tab'));
+
+  $('yr').textContent = YEAR;
+  $('qr-sub').textContent = 'и добавьте свои достижения за ' + YEAR + ' год';
+
+  // ── helpers ──
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  }
+  function store(k, v) { try { localStorage.setItem(KEY + '-' + k, JSON.stringify(v)); } catch (e) {} }
+  function load(k) { try { var v = localStorage.getItem(KEY + '-' + k); return v ? JSON.parse(v) : null; } catch (e) { return null; } }
+  function drop(k) { try { localStorage.removeItem(KEY + '-' + k); } catch (e) {} }
+
+  // getEntries — прочитать все записи; addEntries — добавить. Ответ: {ok, entries} или {ok:false, error}.
+  function call(fn, arg) {
+    var ctrl = window.AbortController ? new AbortController() : null;
+    var timer = ctrl && setTimeout(function () { ctrl.abort(); }, 25000);
+    var opts = fn === 'addEntries'
+      ? { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(arg) }
+      : { method: 'GET' };
+    if (ctrl) opts.signal = ctrl.signal;
+    var url = fn === 'addEntries' ? API : API + '?api=entries&t=' + Date.now();
+    return fetch(url, opts).then(function (r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    }).then(function (data) {
+      clearTimeout(timer);
+      if (!data || !data.ok) throw new Error('USER: ' + ((data && data.error) || 'Сервер не ответил. Попробуйте ещё раз.'));
+      return data.entries || [];
+    }, function (e) {
+      clearTimeout(timer);
+      throw e;
+    });
+  }
+  function errText(e, fallback) {
+    var m = String((e && e.message) || e || '');
+    var i = m.indexOf('USER:');
+    return i >= 0 ? m.slice(i + 5).trim() : fallback;
+  }
+
+  var toastTimer;
+  function toast(text) {
+    var t = $('toast');
+    t.textContent = text;
+    t.hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { t.hidden = true; }, 3600);
+  }
+  function setStatus(text, isErr) {
+    statusEl.textContent = text || HINT;
+    statusEl.className = 'status' + (isErr ? ' err' : '');
+  }
+  function grow(t) {
+    t.style.height = 'auto';
+    t.style.height = Math.max(112, t.scrollHeight + 2) + 'px';
+  }
+  function currentQuarter() {
+    var d = new Date();
+    return d.getFullYear() === YEAR ? Math.floor(d.getMonth() / 3) : -1;
+  }
+  function hhmm() {
+    var d = new Date();
+    return ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2);
+  }
+  function plural(n, one, few, many) {
+    var a = n % 10, b = n % 100;
+    if (a === 1 && b !== 11) return one;
+    if (a >= 2 && a <= 4 && (b < 12 || b > 14)) return few;
+    return many;
+  }
+  function stampParts(u) { return /^(\d\d)\.(\d\d)\.(\d{4}) (\d\d):(\d\d)(?::(\d\d))?/.exec(u || ''); }
+  function sortKey(u) { var m = stampParts(u); return m ? m[3] + m[2] + m[1] + m[4] + m[5] + (m[6] || '00') : '0'; }
+  function entryKey(e) { return e.at + '|' + e.q + '|' + e.text; }
+  function byNewest(a, b) {
+    var ka = sortKey(a.at), kb = sortKey(b.at);
+    return ka < kb ? 1 : ka > kb ? -1 : b.i - a.i;
+  }
+  function byQuarter(entries) {
+    var g = [[], [], [], []];
+    entries.slice().sort(byNewest).forEach(function (e) { if (g[e.q]) g[e.q].push(e); });
+    return g;
+  }
+  function signature(entries) { return entries.map(entryKey).join('\n'); }
+
+  // Плавное затухание снизу, пока в колонке есть что прокручивать.
+  function updateFade(list) {
+    list.classList.toggle('more', list.scrollTop + list.clientHeight < list.scrollHeight - 4);
+  }
+  function makeScrollable(list) {
+    list.classList.add('scroll');
+    list.addEventListener('scroll', function () { updateFade(list); }, { passive: true });
+  }
+
+  var cq = currentQuarter();
+  var state = { entries: [], sig: '', loaded: false, failed: false, tab: cq >= 0 ? cq : 0, fresh: {} };
+
+  // ── shared table ──
+  function renderBoard() {
+    var g = byQuarter(state.entries), n = state.entries.length;
+    countEl.textContent = state.loaded ? n + ' ' + plural(n, 'запись', 'записи', 'записей') : '';
+    tabs.forEach(function (t, i) {
+      t.querySelector('small').textContent = g[i].length;
+      t.setAttribute('aria-selected', String(state.tab === i));
+    });
+
+    // Запоминаем, кто куда прокрутил, чтобы обновление не сбрасывало позицию.
+    var prev = Array.prototype.map.call(boardBody.querySelectorAll('.col-list'), function (l) { return l.scrollTop; });
+    boardBody.textContent = '';
+    if (!state.loaded) {
+      boardBody.appendChild(el('p', 'board-msg', state.failed
+        ? 'Не удалось загрузить таблицу. Проверьте интернет и нажмите «Обновить».'
+        : 'Загружаем таблицу…'));
+      return;
+    }
+
+    var cols = el('div', 'cols'), lists = [];
+    g.forEach(function (list, i) {
+      var col = el('section', 'col q' + i + (state.tab === i ? ' active' : ''));
+      col.setAttribute('aria-label', QN[i] + ' квартал');
+      var head = el('div', 'col-head');
+      head.appendChild(el('span', 'col-num', QN[i]));
+      var lab = el('span', 'col-label', 'квартал');
+      lab.appendChild(el('small', null, QM[i]));
+      head.appendChild(lab);
+      head.appendChild(el('span', 'col-count', list.length));
+      col.appendChild(head);
+
+      var box = el('div', 'col-list');
+      makeScrollable(box);
+      if (!list.length) box.appendChild(el('p', 'col-empty', 'Пока пусто. Будьте первым!'));
+      list.forEach(function (e) {
+        box.appendChild(el('article', 'card' + (state.fresh[entryKey(e)] ? ' fresh' : ''), e.text));
+      });
+      col.appendChild(box);
+      cols.appendChild(col);
+      lists.push(box);
+    });
+    boardBody.appendChild(cols);
+    lists.forEach(function (l, i) { l.scrollTop = prev[i] || 0; updateFade(l); });
+    return lists;
+  }
+
+  function loadBoard() {
+    return call('getEntries').then(function (entries) {
+      entries = entries || [];
+      var sig = signature(entries);
+      if (state.loaded && sig === state.sig) return;  // ничего не поменялось — не трогаем таблицу
+      state.entries = entries;
+      state.sig = sig;
+      state.loaded = true;
+      state.failed = false;
+      renderBoard();
+    }, function (e) {
+      if (!state.loaded) { state.failed = true; renderBoard(); }
+      throw e;
+    });
+  }
+
+  tabs.forEach(function (t, i) {
+    t.addEventListener('click', function () { state.tab = i; renderBoard(); });
+  });
+  window.addEventListener('resize', function () {
+    Array.prototype.forEach.call(document.querySelectorAll('.scroll'), updateFade);
+  });
+
+  // ── form ──
+  if (cq >= 0) {
+    var nowCard = document.querySelector('.q[data-q="' + cq + '"]');
+    nowCard.querySelector('.q-now').hidden = false;
+  }
+
+  ta.forEach(function (t) {
+    t.addEventListener('input', function () {
+      grow(t);
+      store('draft', { q: ta.map(function (x) { return x.value; }) });
+      if (statusEl.className !== 'status' || statusEl.textContent !== HINT) setStatus('');
+    });
+  });
+
+  achForm.addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    var vals = ta.map(function (t) { return t.value.trim(); });
+    var filled = vals.filter(Boolean).length;
+    if (!filled) {
+      setStatus('Напишите хотя бы одно достижение', true);
+      ta[cq >= 0 ? cq : 0].focus();
+      return;
+    }
+    var before = {};
+    state.entries.forEach(function (e) { before[entryKey(e)] = true; });
+    saveBtn.disabled = true;
+    saveBtn.textContent = 'Добавляем…';
+    call('addEntries', { q: vals }).then(function (entries) {
+      state.entries = entries || [];
+      state.sig = signature(state.entries);
+      state.loaded = true;
+      state.failed = false;
+      state.entries.forEach(function (e) {
+        var k = entryKey(e);
+        if (before[k]) return;
+        state.fresh[k] = true;
+        setTimeout(function () { delete state.fresh[k]; renderBoard(); }, 8000);
+      });
+      for (var i = 0; i < 4; i++) if (vals[i]) { state.tab = i; break; }
+      ta.forEach(function (t) { t.value = ''; grow(t); });
+      drop('draft');
+      var lists = renderBoard() || [];
+      lists.forEach(function (l, i) { if (vals[i]) { l.scrollTop = 0; updateFade(l); } });
+      setStatus('Добавлено в ' + hhmm() + '. Можно написать ещё.');
+      toast(filled === 1 ? 'Спасибо! Запись уже в общей таблице' : 'Спасибо! Добавлено записей: ' + filled);
+      $('board').scrollIntoView({ block: 'start' });
+    }, function (e) {
+      setStatus(errText(e, 'Не получилось сохранить. Проверьте интернет и попробуйте ещё раз.'), true);
+    }).then(function () {
+      saveBtn.disabled = false;
+      saveBtn.textContent = 'Добавить в таблицу';
+    });
+  });
+
+  $('refresh').addEventListener('click', function () {
+    loadBoard().then(function () { toast('Таблица обновлена'); }, function () { toast('Не удалось обновить. Проверьте интернет'); });
+  });
+
+  // ── QR ──
+  var pageUrl = BOOT.url || location.href;
+  // Уровень L — меньше точек и крупнее каждая, экран не пачкается. Белая рамка — 4 точки, как в стандарте.
+  // Тёмные точки рисуем сплошными полосами, чтобы между соседними не было швов.
+  function qrSvg(text) {
+    var qr = qrcode(0, 'L');
+    qr.addData(text);
+    qr.make();
+    var n = qr.getModuleCount(), m = 4, size = n + m * 2, d = '';
+    for (var r = 0; r < n; r++) {
+      for (var c = 0; c < n; c++) {
+        if (!qr.isDark(r, c)) continue;
+        var start = c;
+        while (c + 1 < n && qr.isDark(r, c + 1)) c++;
+        d += 'M' + (start + m) + ' ' + (r + m) + 'h' + (c - start + 1) + 'v1h-' + (c - start + 1) + 'z';
+      }
+    }
+    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + size + ' ' + size +
+      '" shape-rendering="crispEdges" role="img" aria-label="QR-код ссылки на эту страницу">' +
+      '<rect width="' + size + '" height="' + size + '" fill="#ffffff"/><path d="' + d + '" fill="#000000"/></svg>';
+  }
+  function fillQr(box) {
+    box.textContent = '';
+    if (typeof qrcode === 'function') box.innerHTML = qrSvg(pageUrl);
+    else box.appendChild(el('p', 'qr-fallback', 'QR-код не загрузился. Отправьте коллегам ссылку.'));
+  }
+  function openQr() {
+    fillQr($('qr-box'));
+    $('qr-url').textContent = pageUrl;
+    $('qr-layer').hidden = false;
+    $('close-qr').focus();
+  }
+  function closeQr() {
+    $('qr-layer').hidden = true;
+    document.body.classList.remove('qr-mode');
+  }
+  $('show-qr').addEventListener('click', openQr);
+  $('close-qr').addEventListener('click', closeQr);
+  $('qr-layer').addEventListener('click', function (ev) { if (ev.target === ev.currentTarget) closeQr(); });
+  document.addEventListener('keydown', function (ev) { if (ev.key === 'Escape' && !$('qr-layer').hidden) closeQr(); });
+  $('copy-url').addEventListener('click', function () {
+    function fallback() {
+      var t = el('textarea');
+      t.value = pageUrl;
+      t.setAttribute('readonly', '');
+      t.style.position = 'fixed';
+      t.style.opacity = '0';
+      document.body.appendChild(t);
+      t.select();
+      var ok = false;
+      try { ok = document.execCommand('copy'); } catch (e) {}
+      document.body.removeChild(t);
+      toast(ok ? 'Ссылка скопирована' : 'Выделите ссылку под QR-кодом и скопируйте её');
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(pageUrl).then(function () { toast('Ссылка скопирована'); }, fallback);
+    } else {
+      fallback();
+    }
+  });
+  $('screen-link').href = (BOOT.url || '') + '?page=screen';
+
+  // ── big screen (?page=screen) ──
+  function startScreen() {
+    var STEP = 10000;    // как часто колонка сама сдвигается вниз
+    var IDLE = 30000;    // после ручной прокрутки колонка столько ждёт, прежде чем листать сама
+    var POLL = 15000;    // как часто проверять новые записи
+    var FRESH = 45000;   // сколько подсвечивать новую запись
+    var sc = { entries: null, keys: {}, fresh: {}, cols: [] };
+
+    document.body.classList.add('screen-mode');
+    $('s-yr').textContent = YEAR;
+    fillQr($('s-qr'));
+
+    QN.forEach(function (name, i) {
+      var col = el('section', 's-col q' + i);
+      col.setAttribute('aria-label', name + ' квартал');
+      var head = el('div', 's-col-head');
+      head.appendChild(el('span', 's-col-num', name));
+      var lab = el('span', 's-col-label', i === cq ? 'квартал · сейчас' : 'квартал');
+      lab.appendChild(el('small', null, QM[i]));
+      head.appendChild(lab);
+      var cnt = el('span', 's-col-count', '0');
+      head.appendChild(cnt);
+      var list = el('div', 's-list');
+      list.tabIndex = 0;
+      makeScrollable(list);
+      col.appendChild(head);
+      col.appendChild(list);
+      $('s-cols').appendChild(col);
+      var c = { list: list, count: cnt, touched: 0 };
+      ['wheel', 'touchstart', 'pointerdown', 'keydown'].forEach(function (type) {
+        list.addEventListener(type, function () { c.touched = Date.now(); }, { passive: true });
+      });
+      sc.cols.push(c);
+    });
+
+    function scrollable(l) { return l.scrollHeight - l.clientHeight > 4; }
+    function updateHint() {
+      $('s-scroll-hint').hidden = !sc.cols.some(function (c) { return scrollable(c.list); });
+      sc.cols.forEach(function (c) { updateFade(c.list); });
+    }
+
+    function render(toTop) {
+      var all = sc.entries || [], g = byQuarter(all);
+      $('s-count').textContent = all.length;
+      $('s-count-label').textContent = plural(all.length, 'достижение', 'достижения', 'достижений') + ' в таблице';
+      sc.cols.forEach(function (c, i) {
+        var keep = c.list.scrollTop;
+        c.count.textContent = g[i].length;
+        c.list.textContent = '';
+        if (!sc.entries) { c.list.appendChild(el('p', 's-empty', 'Загружаем…')); return; }
+        if (!g[i].length) { c.list.appendChild(el('p', 's-empty', 'Пока пусто')); return; }
+        var items = g[i].slice().sort(function (a, b) {  // новые записи наверху колонки
+          return (sc.fresh[entryKey(b)] ? 1 : 0) - (sc.fresh[entryKey(a)] ? 1 : 0);
+        });
+        items.forEach(function (e) {
+          var k = entryKey(e), isFresh = !!sc.fresh[k];
+          var card = el('article', 's-card' + (isFresh ? ' fresh' : ''));
+          card.setAttribute('data-k', k);
+          if (isFresh) card.appendChild(el('span', 's-new', 'новое'));
+          card.appendChild(el('p', null, e.text));
+          c.list.appendChild(card);
+        });
+        c.list.scrollTop = toTop && toTop[i] ? 0 : keep;
+      });
+      updateHint();
+    }
+
+    // Колонка, которую никто не трогал, сама сдвигается на экран вниз; дойдя до конца — наверх.
+    function autoScroll() {
+      var now = Date.now();
+      sc.cols.forEach(function (c) {
+        var l = c.list;
+        if (!scrollable(l) || now - c.touched < IDLE) return;
+        if (l.scrollTop + l.clientHeight >= l.scrollHeight - 4) l.scrollTo({ top: 0, behavior: SMOOTH });
+        else l.scrollBy({ top: Math.round(l.clientHeight * 0.8), behavior: SMOOTH });
+      });
+    }
+
+    function unfresh(k) {
+      delete sc.fresh[k];
+      Array.prototype.forEach.call(document.querySelectorAll('.s-card.fresh'), function (r) {
+        if (r.getAttribute('data-k') !== k) return;
+        r.classList.remove('fresh');
+        var badge = r.querySelector('.s-new');
+        if (badge) badge.parentNode.removeChild(badge);
+      });
+      updateHint();
+    }
+    function setLive(ok) {
+      $('s-live').className = 's-live' + (ok ? '' : ' off');
+      $('s-live-label').textContent = ok
+        ? 'Обновляется автоматически · ' + hhmm()
+        : 'Нет связи, пробуем снова…';
+    }
+
+    function poll() {
+      call('getEntries').then(function (entries) {
+        entries = entries || [];
+        var first = !sc.entries, keys = {}, added = [];
+        entries.forEach(function (e) {
+          var k = entryKey(e);
+          if (!first && !sc.keys[k] && !keys[k]) added.push(e);
+          keys[k] = true;
+        });
+        var same = !first && !added.length && Object.keys(keys).length === Object.keys(sc.keys).length;
+        sc.keys = keys;
+        sc.entries = entries;
+        setLive(true);
+        if (same) return;
+        var toTop = [false, false, false, false], now = Date.now();
+        added.forEach(function (e) {
+          var k = entryKey(e);
+          sc.fresh[k] = true;
+          toTop[e.q] = true;
+          sc.cols[e.q].touched = now;  // даём новой записи постоять наверху
+          setTimeout(function () { unfresh(k); }, FRESH);
+        });
+        if (added.length) {
+          toast(added.length === 1
+            ? 'Новое достижение в ' + QN[added[0].q] + ' квартале'
+            : 'Новых достижений: ' + added.length);
+        }
+        render(toTop);
+      }, function () { setLive(false); });
+    }
+
+    window.addEventListener('resize', updateHint);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(updateHint);
+
+    // Не даём экрану уснуть (если браузер разрешит).
+    function keepAwake() {
+      try {
+        if (navigator.wakeLock && document.visibilityState === 'visible') navigator.wakeLock.request('screen').catch(function () {});
+      } catch (e) {}
+    }
+    keepAwake();
+    document.addEventListener('visibilitychange', keepAwake);
+
+    $('s-full').addEventListener('click', function () {
+      function hint() { toast('Нажмите F11, на Mac — Ctrl+Cmd+F'); }
+      var d = document.documentElement, p = null;
+      try { p = d.requestFullscreen ? d.requestFullscreen() : null; } catch (e) { p = null; }
+      if (p && p.then) p.catch(hint); else hint();
+    });
+    document.addEventListener('fullscreenchange', function () {
+      $('s-full').hidden = !!document.fullscreenElement;
+      setTimeout(updateHint, 300);
+    });
+
+    // Прячем курсор, когда мышь не двигается.
+    var idle;
+    function showCursor() {
+      document.body.classList.remove('no-cursor');
+      clearTimeout(idle);
+      idle = setTimeout(function () { document.body.classList.add('no-cursor'); }, 3000);
+    }
+    document.addEventListener('mousemove', showCursor);
+    showCursor();
+
+    render();
+    poll();
+    setInterval(poll, POLL);
+    setInterval(autoScroll, STEP);
+  }
+
+  // ── start ──
+  if (BOOT.page === 'screen') {
+    startScreen();
+  } else {
+    var draft = load('draft');
+    if (draft && draft.q) ta.forEach(function (t, i) { t.value = draft.q[i] || ''; grow(t); });
+    setStatus('');
+    renderBoard();
+    loadBoard().catch(function () {});
+    setInterval(function () { if (!document.hidden) loadBoard().catch(function () {}); }, 60000);
+    if (BOOT.page === 'qr') {
+      document.body.classList.add('qr-mode');
+      openQr();
+    }
+  }
+})();
+</script>
+</body>
+</html>
