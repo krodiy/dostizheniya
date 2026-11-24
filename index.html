@@ -380,6 +380,27 @@ body.is-admin .s-del {
   cursor: pointer;
 }
 body.is-admin .s-del:hover, body.is-admin .s-del:focus-visible { background: var(--red); color: #ffffff; }
+.s-confirm {
+  display: flex; align-items: center; gap: .5em; flex-wrap: wrap;
+  margin-top: .6em; padding-top: .55em;
+  border-top: 1px solid var(--line);
+  font-weight: 700; font-size: .9em;
+}
+.s-card.fresh .s-confirm { border-top-color: rgba(255, 255, 255, 0.25); }
+.s-yes {
+  border: 0; cursor: pointer;
+  background: var(--red); color: #ffffff;
+  font: 700 1em/1 var(--font);
+  padding: .5em .85em; border-radius: .5em;
+}
+.s-no {
+  border: 0; cursor: pointer; background: transparent; color: inherit;
+  font: 600 1em/1 var(--font);
+  padding: .5em .4em; text-decoration: underline; text-underline-offset: 3px;
+}
+.s-yes:disabled, .s-no:disabled { opacity: .6; cursor: progress; }
+.s-card.confirming { box-shadow: 0 0 0 3px var(--red); }
+.s-card.deleting { opacity: .55; }
 .s-admin {
   background: var(--red-pale); color: #a3001a;
   font-weight: 700; padding: .35em .8em; border-radius: 999px;
@@ -1032,7 +1053,7 @@ body.screen-mode .toast { top: 1.4em; bottom: auto; font-size: 1.5em; padding: .
     var IDLE = 30000;    // после ручной прокрутки колонка столько ждёт, прежде чем листать сама
     var POLL = 15000;    // как часто проверять новые записи
     var FRESH = 45000;   // сколько подсвечивать новую запись
-    var sc = { entries: null, keys: {}, fresh: {}, cols: [], admin: null };
+    var sc = { entries: null, keys: {}, fresh: {}, cols: [], admin: null, confirming: false, pendingRender: false, cancelConfirm: null };
 
     document.body.classList.add('screen-mode');
     $('s-yr').textContent = YEAR;
@@ -1091,7 +1112,7 @@ body.screen-mode .toast { top: 1.4em; bottom: auto; font-size: 1.5em; padding: .
             del.type = 'button';
             del.title = 'Удалить запись';
             del.setAttribute('aria-label', 'Удалить запись');
-            del.addEventListener('click', function () { askDelete(e, del); });
+            del.addEventListener('click', function () { armDelete(card, e); });
             card.appendChild(del);
           }
           c.list.appendChild(card);
@@ -1156,6 +1177,7 @@ body.screen-mode .toast { top: 1.4em; bottom: auto; font-size: 1.5em; padding: .
             ? 'Новое достижение в ' + QN[added[0].q] + ' квартале'
             : 'Новых достижений: ' + added.length);
         }
+        if (sc.confirming) { sc.pendingRender = true; return; }
         render(toTop);
       }, function () { setLive(false); });
     }
@@ -1199,21 +1221,53 @@ body.screen-mode .toast { top: 1.4em; bottom: auto; font-size: 1.5em; padding: .
       sc.keys = {};
       sc.entries.forEach(function (x) { sc.keys[entryKey(x)] = true; });
     }
-    function askDelete(e, btn) {
-      if (!sc.admin) return;
-      var preview = e.text.length > 160 ? e.text.slice(0, 160) + '…' : e.text;
-      if (!window.confirm('Удалить запись из ' + QN[e.q] + ' квартала?\n\n«' + preview + '»')) return;
-      btn.disabled = true;
-      call('deleteEntry', { key: sc.admin, i: e.i, at: e.at, q: e.q, text: e.text }).then(function (entries) {
-        delete sc.fresh[entryKey(e)];
-        setEntries(entries);
-        render();
-        toast('Запись удалена');
-      }, function (err) {
-        btn.disabled = false;
-        toast(errText(err, 'Не получилось удалить. Проверьте интернет и попробуйте ещё раз.'));
-        poll();
+    // Подтверждение прямо в карточке: системные окна confirm() некоторые браузеры молча блокируют.
+    // Пока вопрос открыт, экран не перерисовывается (новые записи покажем сразу после ответа),
+    // иначе вопрос пропал бы прямо из-под пальца.
+    function armDelete(card, e) {
+      if (!sc.admin || card.querySelector('.s-confirm')) return;
+      if (sc.cancelConfirm) sc.cancelConfirm();
+      var bar = el('div', 's-confirm');
+      bar.appendChild(el('span', null, 'Удалить запись?'));
+      var yes = el('button', 's-yes', 'Удалить');
+      var no = el('button', 's-no', 'Отмена');
+      yes.type = no.type = 'button';
+      bar.appendChild(yes);
+      bar.appendChild(no);
+      card.appendChild(bar);
+      card.classList.add('confirming');
+      sc.confirming = true;
+      var timer = setTimeout(close, 20000);  // вопрос сам закроется, если не ответить
+      function close() {
+        clearTimeout(timer);
+        if (bar.parentNode) bar.parentNode.removeChild(bar);
+        card.classList.remove('confirming', 'deleting');
+        sc.confirming = false;
+        sc.cancelConfirm = null;
+        if (sc.pendingRender) { sc.pendingRender = false; render(); }
+      }
+      sc.cancelConfirm = close;
+      no.addEventListener('click', close);
+      yes.addEventListener('click', function () {
+        clearTimeout(timer);
+        sc.cancelConfirm = null;
+        yes.disabled = no.disabled = true;
+        yes.textContent = 'Удаляем…';
+        card.classList.add('deleting');
+        call('deleteEntry', { key: sc.admin, i: e.i, at: e.at, q: e.q, text: e.text }).then(function (entries) {
+          sc.confirming = false;
+          sc.pendingRender = false;
+          delete sc.fresh[entryKey(e)];
+          setEntries(entries);
+          render();
+          toast('Запись удалена');
+        }, function (err) {
+          close();
+          toast(errText(err, 'Не получилось удалить. Проверьте интернет и попробуйте ещё раз.'));
+          poll();
+        });
       });
+      yes.focus();
     }
 
     var adminKey = new URLSearchParams(location.search).get('admin');
